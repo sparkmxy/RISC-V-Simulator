@@ -13,6 +13,7 @@ void Simulator::run() {
 	Memory.init(is);
 	Register.init();
 	while (true) {
+	//	Register.show();
 		auto code = getCode();
 	//	std::cout << "code = " << std::hex <<code << std::endl;
 		Register.nextpc();
@@ -20,8 +21,6 @@ void Simulator::run() {
 		ISA_base *operation = decode(code);
 	//	std::cout << "optype: " <<std::dec<< operation->Type() << std::endl;
 		for (int i = 0; i < 4; i++) operation->execute();
-	//	std::cout << "pc = " << Register.getpc() << '\n';
-	//	std::cout << "sp = " << Register[2] << '\n';
 	}
 }
 

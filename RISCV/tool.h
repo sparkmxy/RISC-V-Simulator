@@ -28,7 +28,6 @@ unsigned int getInterval(const unsigned int &code, const int &l, const int &r); 
 
 unsigned int getBit(const unsigned int &code, const int &p);
 
-
 struct signed_21_bit{
 	int val : 21;
 };
@@ -51,4 +50,8 @@ struct unsigned_16_bit {
 
 struct unsigned_8_bit {
 	unsigned int val : 8;
+};
+
+struct unsigned_12_bit {
+	unsigned int val : 12;
 };

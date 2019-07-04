@@ -52,7 +52,7 @@ void R_type::execute() {
 		else if (type == OR) buf[2] = buf[0] | buf[1];
 		else if (type == XOR) buf[2] = buf[0] ^ buf[1];
 		else if (type == SRA) buf[2] = static_cast<int>(buf[0]) >> (buf[1] & 31u);
-		//std::cout << "result: " << buf[2] << '\n';
+	//	std::cout << "result: " << buf[2] << '\n';
 		break;
 	case 3:
 		RM[rd] = buf[2];
@@ -110,7 +110,7 @@ void B_type::execute() {
 		if (type == BEQ) taken = (buf[0] == buf[1]);
 		else if (type == BNE) taken = (buf[0] != buf[1]);
 		else if (type == BLT) taken = static_cast<int>(buf[0]) < static_cast<int>(buf[1]);
-		else if (type == BLTU) taken = buf[0] < buf[1];
+		else if (type == BLTU) taken = (buf[0] < buf[1]);
 		else if (type == BGE) taken = static_cast<int>(buf[0]) >= static_cast<int>(buf[1]);
 		else if (type == BGEU) taken = buf[0] >= buf[1];
 		break;
@@ -143,6 +143,7 @@ S_type::S_type(const unit &_code):ISA_base(_code) {
 	rs2 = getInterval(code, 20, 24);
 	offset = signed_12_bit{ static_cast<int>((getInterval(code, 25, 31) << 5) |
 			getInterval(code,7,11)) }.val;
+	//std::cout << "S_type: " << "offset = " << offset << " storeVal = " << RM[rs2] << '\n';
 }
 
 bool S_type::conflict() {
@@ -157,8 +158,8 @@ void S_type::execute() {
 		buf[1] = RM[rs2];
 		break;
 	case 2:
-		if (type == SB)mem.store(buf[0],buf[1]&((1u<<8)-1),8);
-		else if (type == SH) mem.store(buf[0], buf[1] & ((1u << 16)-1), 16);
+		if (type == SB)mem.store(buf[0],buf[1],8);
+		else if (type == SH) mem.store(buf[0], buf[1], 16);
 		else if (type == SW) mem.store(buf[0], buf[1]);
 	default:
 		break;
@@ -191,18 +192,18 @@ opType I_type::getOpType() {
 		case 0: return LB;
 		case 1: return LH;
 		case 2: return LW;
-		case 3: return LBU;
-		case 4: return LHU;
+		case 4: return LBU;
+		case 5: return LHU;
 		}
 	}
 }
 
-I_type::I_type(const unit &_code) :ISA_base(_code) {
+I_type::I_type(const unit &_code) :ISA_base(_code),buf(0){
 	type = getOpType();
 	rs1 = getInterval(code, 15, 19);
-	if (type == SLLI || type == SRLI || type == SRLI)
+	if (type == SLLI || type == SRAI || type == SRLI)
 		imm = getInterval(code,20,24);
-	else if (type == JALR) {
+	else if(type == JALR) {
 		offset = signed_12_bit{ static_cast<int>(getInterval(code, 20, 31)) }.val;
 	}
 	else imm = getInterval(code, 20, 31);
@@ -222,9 +223,9 @@ void I_type::executeRIOperation() {
 	{
 	case 0: RM.lock(rd); buf = RM[rs1]; break;
 	case 1:
-		if (type == ADDI) buf = (int)buf + signed_12_bit{ static_cast<int>(imm) }.val;
-		else if (type == SLTI) buf = (int) buf < signed_12_bit{ static_cast<int>(imm) }.val;
-		else if (type == SLTIU) buf = buf < imm;
+		if (type == ADDI) buf = buf + signed_12_bit{ static_cast<int>(imm) }.val;
+		else if (type == SLTI) buf = (int)buf < signed_12_bit{ static_cast<int>(imm) }.val;
+		else if (type == SLTIU) buf = buf < (unsigned int)signed_12_bit{ static_cast<int>(imm) }.val;
 		else if (type == ANDI) buf &= signed_12_bit{ static_cast<int>(imm) }.val;
 		else if (type == ORI) buf |= signed_12_bit{ static_cast<int>(imm) }.val;
 		else if (type == XORI) buf ^= signed_12_bit{ static_cast<int>(imm) }.val;
@@ -297,7 +298,7 @@ J_type::J_type(const unit &_code):ISA_base(_code) {
 		(getBit(code, 31) << 20) | (getInterval(code, 12, 19) << 12)
 		| (getBit(code, 20) << 11) | (getInterval(code, 21, 30) << 1)
 		)}.val;
-//	std::cout << "offset = " << std::dec << offset << std::endl;
+	//std::cout << "offset = " << std::dec << offset << std::endl;
 }
 
 void J_type::execute() {
@@ -332,11 +333,14 @@ void U_type::execute() {
 	{
 	case 0: 
 		RM.lock(rd); 
-		buf = RM.getpc();
+		if(type == AUIPC) buf = RM.getpc(); // - 4 ?
 		break;
 	case 1:
-		if (type == AUIPC) buf += signed_20_bit{ static_cast<int>(imm) }.val;
-		else if (type == LUI) buf = imm << 12;
+		if (type == AUIPC) buf += (imm << 12);   
+		else if (type == LUI) {
+			buf = imm << 12;
+	//		std::cout << "lui buf = " << buf << " and rd = " << rd << '\n';
+		}
 	case 3: RM[rd] = buf; RM.unlock(rd);  break;
 	default:
 		break;

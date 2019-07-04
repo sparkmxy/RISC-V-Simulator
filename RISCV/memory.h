@@ -21,7 +21,7 @@ public:
 
 	unit load(const Address &addr,int bit = 32) const ;
 	int loadAsInt(const Address &addr, const int &bit) const;
-	void store(const Address &addr, const unit &code,int bits = 32);
+	void store(const Address &addr, const unit &code,int bit = 32);
 	unit getCode(const Address &addr);
 
 	~memory();

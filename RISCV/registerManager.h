@@ -1,6 +1,5 @@
 #pragma once
 #include <cstring>
-
 class registerManager
 {
 	static const int SIZE = 32;
@@ -39,5 +38,10 @@ public:
 	bool isPcLocked() { return pclock; }
 
 	void nextpc() { pc += 4; }
+
+	void show() {
+		std::cout << "pc = " << std::hex << pc << '\n';
+		for (int i = 0; i < 32; i++) std::cout << r[i] << ' '; std::cout << '\n';
+	}
 };
 

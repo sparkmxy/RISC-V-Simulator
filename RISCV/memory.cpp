@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "memory.h"
 #include "sstream"
 #include "tool.h"
@@ -37,7 +37,7 @@ memory::unit memory::load(const Address &addr,int bit) const {
 	//std::cout << "load: " << addr << " " << bit <<std:: endl;
 	if(bit == 32)return *reinterpret_cast<const unit *>(pool + addr);
 	else if (bit == 16) return unsigned_16_bit{ (unit)*reinterpret_cast<const short *>(pool + addr) }.val;
-	else if (bit == 8) return unsigned_8_bit{ (unit)*reinterpret_cast<const char *>(pool + addr) }.val;
+	else if (bit == 8) return unsigned_8_bit{(unit)pool[addr]}.val;
 }
 
 void memory::store(const Address &addr, const unit &code,int bit) {
@@ -45,8 +45,7 @@ void memory::store(const Address &addr, const unit &code,int bit) {
 	else if(bit == 16) *reinterpret_cast<short *>(pool + addr) = code;
 	else if (bit == 8) pool[addr] = code;
 }
-
-int memory::memory::loadAsInt(const Address &addr,const int &bit) const {
+int memory::memory::loadAsInt(const Address &addr,const int &bit) const {  //SIGN_EXTENDED
 	if (bit == 16) return *reinterpret_cast<const short *>(pool + addr);
 	else if (bit == 8)return pool[addr];
 }
