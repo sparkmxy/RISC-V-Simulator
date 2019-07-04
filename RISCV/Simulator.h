@@ -21,5 +21,7 @@ public:
 	~Simulator();
 private:
 	unit getCode();
+
+	ISA_base* decode(unsigned int code);
 };
 

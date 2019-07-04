@@ -8,8 +8,8 @@ class registerManager
 	unit r[SIZE];
 	unit pc,x0Shadow;
 
-	bool locked[SIZE];
-	bool pclock;
+	int locked[SIZE];
+	int pclock;
 
 public:
 	registerManager() :pclock(false) {
@@ -30,10 +30,10 @@ public:
 	void setpc(const unit &addr) { pc = addr; }
 
 
-	void lockpc() { pclock = true; }
-	void unlockpc() { pclock = false; }
-	void lock(int idx) { locked[idx] = true; }
-	void unlock(int idx) { locked[idx] = false; }
+	void lockpc() { pclock++; }
+	void unlockpc() { pclock--; }
+	void lock(int idx) { locked[idx]++; }
+	void unlock(int idx) { locked[idx]--; }
 	bool islocked(int idx) { return locked[idx]; }
 	bool isPcLocked() { return pclock; }
 

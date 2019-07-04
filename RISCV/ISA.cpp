@@ -161,6 +161,7 @@ void S_type::execute() {
 		if (type == SB)mem.store(buf[0],buf[1],8);
 		else if (type == SH) mem.store(buf[0], buf[1], 16);
 		else if (type == SW) mem.store(buf[0], buf[1]);
+		break;
 	default:
 		break;
 	}
@@ -255,7 +256,8 @@ void I_type::excuteJALR() {
 	case 2: 
 		RM.setpc(buf);
 		RM.unlockpc();
-	default:
+		break;
+	case 3:
 		RM[rd] = oldpc; // + 4 ? 
 		RM.unlock(rd);
 		break;
@@ -342,6 +344,7 @@ void U_type::execute() {
 			buf = imm << 12;
 	//		std::cout << "lui buf = " << buf << " and rd = " << rd << '\n';
 		}
+		break;
 	case 3: RM[rd] = buf; RM.unlock(rd);  break;
 	default:
 		break;

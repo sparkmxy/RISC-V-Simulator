@@ -1,6 +1,7 @@
 #include "pch.h"
-
 #include "Simulator.h"
+
+//#define DEBUG
 
 Simulator::Simulator(std::istream &_is,std::ostream &_os): is(_is),os(_os){
 	ISA_base::linkMemoryAndRegisters(&Memory, &Register);
@@ -14,17 +15,14 @@ void Simulator::run() {
 	Register.init();
 	ISA_base *flowLine[5];
 	for (int i = 0; i < 5; i++) flowLine[i] = nullptr;
-	/*
-
-	*/
 	while (true) {
-		/*
+#ifdef DEBUG
 		Register.show();
 		for (int i = 0; i < 4; i++)
 			if (flowLine[i] == nullptr) std::cout << "null ";
 			else std::cout << flowLine[i]->code << " ";
 		std::cout << '\n';
-		*/
+#endif // DEBUG
 		if (flowLine[2] != nullptr && flowLine[2]->isExit()) break;
 		for(int i=3;i>=0;i--)
 			if (flowLine[i] != nullptr && flowLine[i + 1] == nullptr) {
@@ -49,3 +47,19 @@ unit Simulator::getCode() {
 }
 
 
+ISA_base* Simulator:: decode(unsigned int code) {
+	formatType type = getFormatType(code & 127u);
+	//	std::cout << "format code : " << type << std::endl;
+	//std::cout << "decode: " << code << "\n";
+	switch (type)
+	{
+	case R_TYPE: return new R_type(code);
+	case I_TYPE: return new I_type(code);
+	case S_TYPE: return new S_type(code);
+	case B_TYPE: return new B_type(code);
+	case U_TYPE: return new U_type(code);
+	case J_TYPE: return new J_type(code);
+	default:
+		break;
+	}
+}

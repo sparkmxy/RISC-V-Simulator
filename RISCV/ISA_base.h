@@ -35,5 +35,3 @@ public:
 		return code == exitCode;
 	}
 };
-
-ISA_base* decode(unsigned int code);
