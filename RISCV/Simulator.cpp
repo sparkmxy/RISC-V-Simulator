@@ -38,8 +38,8 @@ void Simulator::run() {
 			Register.nextpc();
 		}
 		if (flowLine[4] != nullptr) {
-			flowLine[4] = nullptr;
 			delete flowLine[4];
+			flowLine[4] = nullptr;
 		}
 	}
 }
