@@ -6,10 +6,11 @@
 
 class ISA_base
 {
+	static const unsigned int exitCode = 0x00c68223;
 protected:
 	opType type;
 	int stage;
-	unsigned int code;
+	
 	memory &mem;
 	registerManager &RM;
 
@@ -17,6 +18,7 @@ protected:
 	static registerManager *RMptr;
 
 public:
+	unsigned int code;
 	ISA_base(const unsigned int &_code) :
 		mem(*memptr),RM(*RMptr),code(_code),stage(0) {}
 
@@ -29,6 +31,9 @@ public:
 	virtual bool conflict() { return false; }
 	virtual ~ISA_base() {}
 	opType Type() { return type; }
+	bool isExit() {
+		return code == exitCode;
+	}
 };
 
 ISA_base* decode(unsigned int code);

@@ -12,8 +12,6 @@ class Simulator
 	std::ostream &os;
 	std::istream &is;
 
-	static const unit exitCode = 0x00c68223;
-
 public:
 	Simulator(std::istream &_is = std::cin,std::ostream &_os = std::cout);
 	

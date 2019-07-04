@@ -40,8 +40,8 @@ public:
 	void nextpc() { pc += 4; }
 
 	void show() {
-		std::cout << "pc = " << std::hex << pc << '\n';
-		for (int i = 0; i < 32; i++) std::cout << r[i] << ' '; std::cout << '\n';
+		std::cout << "pc = " << std::hex << pc << ' '<<pclock<<'\n';
+		for (int i = 0; i < 32; i++) std::cout << locked[i] << ' '; std::cout << '\n';
 	}
 };
 

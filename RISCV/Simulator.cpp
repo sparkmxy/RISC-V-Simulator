@@ -12,16 +12,35 @@ Simulator::~Simulator(){}
 void Simulator::run() {
 	Memory.init(is);
 	Register.init();
+	ISA_base *flowLine[5];
+	for (int i = 0; i < 5; i++) flowLine[i] = nullptr;
+	/*
+
+	*/
 	while (true) {
-	//	Register.show();
-		auto code = getCode();
-	//	std::cout << "code = " << std::hex <<code << std::endl;
-		Register.nextpc();
-		if (code == exitCode) break;
-		ISA_base *operation = decode(code);
-	//	std::cout << "optype: " <<std::dec<< operation->Type() << std::endl;
-		for (int i = 0; i < 4; i++) operation->execute();
-		delete operation;
+		/*
+		Register.show();
+		for (int i = 0; i < 4; i++)
+			if (flowLine[i] == nullptr) std::cout << "null ";
+			else std::cout << flowLine[i]->code << " ";
+		std::cout << '\n';
+		*/
+		if (flowLine[2] != nullptr && flowLine[2]->isExit()) break;
+		for(int i=3;i>=0;i--)
+			if (flowLine[i] != nullptr && flowLine[i + 1] == nullptr) {
+				if (i == 0 && flowLine[i]->conflict()) continue;
+				flowLine[i]->execute();
+				flowLine[i + 1] = flowLine[i];
+				flowLine[i] = nullptr;
+			}
+		if (flowLine[0] == nullptr && !Register.isPcLocked()) {
+			flowLine[0] = decode(getCode());
+			Register.nextpc();
+		}
+		if (flowLine[4] != nullptr) {
+			flowLine[4] = nullptr;
+			delete flowLine[4];
+		}
 	}
 }
 

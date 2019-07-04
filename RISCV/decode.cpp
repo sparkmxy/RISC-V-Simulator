@@ -7,6 +7,7 @@
 ISA_base* decode(unsigned int code) {
 	formatType type = getFormatType(code & 127u);
 //	std::cout << "format code : " << type << std::endl;
+	std::cout << "decode: " << code << "\n";
 	switch (type)
 	{
 	case R_TYPE: return new R_type(code);

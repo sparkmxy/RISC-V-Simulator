@@ -95,7 +95,7 @@ B_type::B_type(const unit &_code) :ISA_base(_code){
 }
 
 bool B_type::conflict() {
-	return RM.islocked(rs1) || RM.islocked(rs2);
+	return RM.islocked(rs1) || RM.islocked(rs2) || RM.isPcLocked();
 }
 
 void B_type::execute() {
@@ -246,7 +246,7 @@ void I_type::executeRIOperation() {
 void I_type::excuteJALR() {
 	switch (stage)
 	{
-	case 0: RM.lock(rd); buf = RM[rs1]; break;
+	case 0: RM.lock(rd); RM.lockpc(); buf = RM[rs1]; break;
 	case 1: 
 		oldpc = RM.getpc();
 		buf = RM[rs1] + offset;
@@ -279,6 +279,7 @@ void I_type::executeLoad() {
 		break;
 	case 3:
 		RM[rd] = buf;
+		RM.unlock(rd);
 		break;
 	default:
 		break;
@@ -304,7 +305,7 @@ J_type::J_type(const unit &_code):ISA_base(_code) {
 void J_type::execute() {
 	switch (stage)
 	{
-	case 1: RM.lockpc(); break;// stage 0 or 1?
+	case 0: RM.lockpc(); break;// stage 0 or 1?
 	case 2:
 		buf = RM.getpc();
 		RM.movepc(offset-4);
