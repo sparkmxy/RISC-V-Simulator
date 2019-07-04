@@ -4,13 +4,16 @@
 #include "registerManager.h"
 #include "tool.h"
 
+class Simulator;
+
 class ISA_base
 {
+	friend class Simulator;
 	static const unsigned int exitCode = 0x00c68223;
 protected:
 	opType type;
 	int stage;
-	
+	unsigned int code;
 	memory &mem;
 	registerManager &RM;
 
@@ -18,7 +21,7 @@ protected:
 	static registerManager *RMptr;
 
 public:
-	unsigned int code;
+	
 	ISA_base(const unsigned int &_code) :
 		mem(*memptr),RM(*RMptr),code(_code),stage(0) {}
 

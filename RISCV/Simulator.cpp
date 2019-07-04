@@ -28,6 +28,7 @@ void Simulator::run() {
 			if (flowLine[i] != nullptr && flowLine[i + 1] == nullptr) {
 				if (i == 0 && flowLine[i]->conflict()) continue;
 				flowLine[i]->execute();
+				if (i == 2 && stay(flowLine[i]->type) && flowLine[i]->stage < 5) continue;
 				flowLine[i + 1] = flowLine[i];
 				flowLine[i] = nullptr;
 			}
@@ -62,4 +63,9 @@ ISA_base* Simulator:: decode(unsigned int code) {
 	default:
 		break;
 	}
+}
+
+bool Simulator::stay(const opType &type) {
+	return type == SW || type == SB || type == SH ||
+		type == LH || type == LHU || type == LBU || type == LB || type == LW;
 }

@@ -23,5 +23,7 @@ private:
 	unit getCode();
 
 	ISA_base* decode(unsigned int code);
+
+	bool stay(const opType &type);
 };
 
