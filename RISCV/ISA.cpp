@@ -115,7 +115,7 @@ void B_type::execute() {
 		else if (type == BGEU) taken = buf[0] >= buf[1];
 		break;
 	case 2:
-		if (taken) RM.movepc(offset);
+		if (taken) RM.movepc(offset-4);
 		RM.unlockpc();
 		break;
 	case 3:
