@@ -21,6 +21,7 @@ void Simulator::run() {
 		ISA_base *operation = decode(code);
 	//	std::cout << "optype: " <<std::dec<< operation->Type() << std::endl;
 		for (int i = 0; i < 4; i++) operation->execute();
+		delete operation;
 	}
 }
 
