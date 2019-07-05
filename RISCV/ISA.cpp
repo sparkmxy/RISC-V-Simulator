@@ -121,7 +121,7 @@ void B_type::execute() {
 		if (taken != pre) {
 			wrongBranch++;
 			type = WRONG_BRUNCH;
-			RM.setpc(taken ? pc + offset - 4 : pc + 4);
+			RM.setpc(taken ? pc + offset : pc + 4);
 		}
 		break;
 	case 2:
