@@ -5,12 +5,13 @@ enum  opType
 	ADD, SUB, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND,    // R_type format;
 	BEQ, BNE, BLT, BGE, BLTU, BGEU, // B_type format
 	SB, SH, SW, //S_type format
-	LB, LH, LW, LBU, LHU, 
+	LB, LH, LW, LBU, LHU,
 	ADDI, SLTI, SLTIU, XORI, ORI, ANDI, // I_type format
 	SLLI, SRLI, SRAI, //I_type format (specail)
 	LUI, AUIPC,   // U_type format
 	JALR,     //J_type format
-	JAL
+	JAL,
+	WRONG_BRUNCH
 };
 
 enum formatType {

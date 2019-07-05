@@ -29,6 +29,10 @@ void Simulator::run() {
 				if (i == 0 && flowLine[i]->conflict()) continue;
 				flowLine[i]->execute();
 				if (i == 2 && stay(flowLine[i]->type) && flowLine[i]->stage < 5) continue;
+				if (i == 1 && flowLine[i]->type == WRONG_BRUNCH) {
+					delete flowLine[0];
+					flowLine[0] = nullptr;
+				}
 				flowLine[i + 1] = flowLine[i];
 				flowLine[i] = nullptr;
 			}
@@ -57,7 +61,7 @@ ISA_base* Simulator:: decode(unsigned int code) {
 	case R_TYPE: return new R_type(code);
 	case I_TYPE: return new I_type(code);
 	case S_TYPE: return new S_type(code);
-	case B_TYPE: return new B_type(code);
+	case B_TYPE: return new B_type(code,Register.getpc());
 	case U_TYPE: return new U_type(code);
 	case J_TYPE: return new J_type(code);
 	default:

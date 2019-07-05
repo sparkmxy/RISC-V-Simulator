@@ -3,12 +3,15 @@
 
 #include "pch.h"
 #pragma warning(disable : 4996)
-#include <iostream>
 #include "Simulator.h"
 #include <fstream>
+#include <iostream>
+#include <cstdlib>
 
 int main(){
+	
 	std::ios_base::sync_with_stdio(0);
+	std::srand(233);
 	//freopen("ans.out", "w", stdout);
 	//std::ifstream file("hanoi.in");
 	Simulator simulator;

@@ -35,14 +35,16 @@ private:
 class B_type :public ISA_base {
 	int rs1, rs2;
 	int offset;
-	bool taken;
-	unit buf[2];
+	bool taken,pre;
+	unit buf[2],pc;
+
 public:
-	B_type(const unit &_code);
+	B_type(const unit &_code,const unit &_pc);
 	void execute();
 	bool conflict();
 private:
 	opType getOpType();
+	bool predict();
 };
 
 class I_type :public ISA_base {

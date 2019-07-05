@@ -6,6 +6,9 @@
 memory *ISA_base::memptr = nullptr;
 registerManager *ISA_base::RMptr = nullptr;
 
+int totalBranch;
+int wrongBranch;
+
 /*R_type*/
 opType R_type::getOpType() {
 	auto func3 = getInterval(code, 12, 14);
@@ -83,7 +86,7 @@ opType B_type::getOpType() {
 	}
 }
 
-B_type::B_type(const unit &_code) :ISA_base(_code){
+B_type::B_type(const unit &_code,const unit &_pc) :ISA_base(_code),pc(_pc){
 	type = getOpType();
 	rs1 = getInterval(code, 15, 19);
 	rs2 = getInterval(code, 20, 24);
@@ -102,9 +105,11 @@ void B_type::execute() {
 	switch (stage)
 	{
 	case 0:
+		totalBranch++;
 		buf[0] = RM[rs1];
 		buf[1] = RM[rs2];
-		RM.lockpc();
+		pre = predict();
+		if (pre) RM.movepc(offset - 4);
 		break;
 	case 1:
 		if (type == BEQ) taken = (buf[0] == buf[1]);
@@ -113,10 +118,14 @@ void B_type::execute() {
 		else if (type == BLTU) taken = (buf[0] < buf[1]);
 		else if (type == BGE) taken = static_cast<int>(buf[0]) >= static_cast<int>(buf[1]);
 		else if (type == BGEU) taken = buf[0] >= buf[1];
+		if (taken != pre) {
+			wrongBranch++;
+			type = WRONG_BRUNCH;
+			RM.setpc(taken ? pc + offset - 4 : pc + 4);
+		}
 		break;
 	case 2:
-		if (taken) RM.movepc(offset-4);
-		RM.unlockpc();
+		//RM.setpc(pc);
 		break;
 	case 3:
 	default:
@@ -125,6 +134,9 @@ void B_type::execute() {
 	stage++;
 }
 
+bool B_type::predict() {
+	return rand() & 1;
+}
 /*S_type*/
 
 opType S_type::getOpType() {
@@ -279,7 +291,7 @@ void I_type::executeLoad() {
 		else if (type == LBU) buf = mem.load(addr,8);
 		else if (type == LHU) buf = mem.load(addr,16);
 		break;
-	case 3:
+	case 5:
 		RM[rd] = buf;
 		RM.unlock(rd);
 		break;
