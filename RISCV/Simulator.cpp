@@ -2,6 +2,9 @@
 #include "Simulator.h"
 
 //#define DEBUG
+//#define SHOWREPORT
+extern int totalBranch;
+extern int wrongBranch;
 
 Simulator::Simulator(std::istream &_is,std::ostream &_os): is(_is),os(_os){
 	ISA_base::linkMemoryAndRegisters(&Memory, &Register);
@@ -45,6 +48,10 @@ void Simulator::run() {
 			flowLine[4] = nullptr;
 		}
 	}
+#ifdef SHOWREPORT
+	std::cout << "Total Branch = " << totalBranch << '\n' << "Wrong Branch = " << wrongBranch << '\n' << "Correct Rate = " 
+		<< (double)(totalBranch - wrongBranch) / totalBranch * 100.0 << "%\n";
+#endif // SHOWREPORT
 }
 
 unit Simulator::getCode() {
