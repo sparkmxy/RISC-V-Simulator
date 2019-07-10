@@ -8,7 +8,7 @@ registerManager *ISA_base::RMptr = nullptr;
 
 int totalBranch;
 int wrongBranch;
-static const int memorySize = 20000 * 16;
+static const int memorySize = 8191;
 static int table[memorySize][16], Bcnt[memorySize], last[memorySize],Btaken[memorySize];
 
 /*R_type*/
@@ -125,10 +125,10 @@ void B_type::execute() {
 			type = WRONG_BRUNCH;
 			RM.setpc(taken ? pc + offset : pc + 4);
 		}
-		Bcnt[pc]++;
-		if (taken) Btaken[pc]++;
-		if(Bcnt[pc] > 2) table[pc][last[pc]<<1|taken]++;
-		last[pc] =  ( (last[pc] & 3) << 1 ) | taken;
+		Bcnt[pc>>2&memorySize]++;
+		if (taken) Btaken[pc&memorySize]++;
+		if(Bcnt[pc>>2&memorySize] > 2) table[pc>>2&memorySize][last[pc>>2&memorySize]<<1|taken]++;
+		last[pc>>2&memorySize] =  ( (last[pc>>2&memorySize] & 3) << 1 ) | taken;
 		break;
 	case 2:
 		//RM.setpc(pc);
@@ -143,8 +143,8 @@ void B_type::execute() {
 bool B_type::predict() {
 
 	static const int LIMIT = 8 * 5;
-	if (Bcnt[pc] <= LIMIT) return Btaken[pc] >= (Bcnt[pc] >> 1);
-	return table[pc][last[pc] << 1 | 1] > table[pc][last[pc] << 1];
+	if (Bcnt[pc>>2&memorySize] <= LIMIT) return Btaken[pc >> 2 & memorySize] >= (Bcnt[pc >> 2 & memorySize] >> 1);
+	return table[pc >> 2 & memorySize][last[pc >> 2 & memorySize] << 1 | 1] > table[pc >> 2 & memorySize][last[pc >> 2 & memorySize] << 1];
 }
 /*S_type*/
 
